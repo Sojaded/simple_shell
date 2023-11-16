@@ -38,7 +38,7 @@
 extern char **environ;
 
 /**
- * Structure for singly linked list of strings
+ * struct liststr - Structure for singly linked list of strings
  * @num: Number field
  * @str: String
  * @next: Pointer to the next node
@@ -51,7 +51,7 @@ typedef struct liststr
 } list_t;
 
 /**
- * Structure for passing pseudo-arguments to functions
+ * struct passinfo - Structure for passing pseudo-arguments to functions
  * @status: Return status of the last executed command
  * @cmd_buf: Address of pointer to cmd_buf, on if chaining
  * @cmd_buf_type: CMD_type ||, &&, ;
@@ -64,17 +64,17 @@ typedef struct liststr
  * @env: Linked list local copy of environ
  * @environ: Custom modified copy of environ from LL env
  * @history: History node
- * @alias: Alias node 
+ * @alias: Alias node
  * @arg: String generated from getline containing arguments
  * @argv: Array of strings generated from arguments
  * @path: String path for the current command
  * @argc: Argument count
  * @env_changed: If environ is changed
-
  */
 typedef struct passinfo
 {
-	char *arg;int err_num;
+	char *arg;
+	int err_num;
 	int linecount_flag;
 	char *fname;
 	list_t *env;
@@ -88,7 +88,7 @@ typedef struct passinfo
 	int env_changed;
 	int status;
 
-	char **cmd_buf; /* Pointer to cmd ; chain buffer, for memory management */
+	char **cmd_buf; /* Pointer to command ; chain buffer, for memory management */
 	int cmd_buf_type; /* CMD_type ||, &&, ; */
 	int readfd;
 	int histcount;
@@ -99,7 +99,7 @@ typedef struct passinfo
 	0, 0, 0}
 
 /**
- * Structure for built-in commands
+ * struct builtin - Structure for built-in commands
  * @type: Builtin command flag
  * @func: Function pointer
  */
