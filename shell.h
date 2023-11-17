@@ -1,47 +1,47 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
 
-/* Constants for command chain */
+/* for reading and writing buffers */
+#define READ_BUF_SIZE 1024
+#define WRITE_BUF_SIZE 1024
+#define BUF_FLUSH -1
+
+/* Constants  for command chains */
 #define CMD_NORM	0
 #define CMD_OR		1
 #define CMD_AND		2
 #define CMD_CHAIN	3
 
-/* Constants for all convert_number() */
+/* COnstants for convert_number() */
 #define CONVERT_LOWERCASE	1
 #define CONVERT_UNSIGNED	2
-
-/* Constants for reading or writing buffers */
-#define READ_BUF_SIZE 1024
-#define WRITE_BUF_SIZE 1024
-#define BUF_FLUSH -1
-
 
 /* It will use a system getline() */
 #define USE_GETLINE 0
 #define USE_STRTOK 0
 
-#define HIST_FILE	".asimple_shell_history"
+#define HIST_FILE	".simple_shell_history"
 #define HIST_MAX	4096
 
 extern char **environ;
 
+
 /**
- * struct liststr - Structure for singly linked list of strings
- * @num: Number field
- * @str: String
- * @next: Pointer to the next node
+ * struct liststr - singly linked list
+ * @num: the number field
+ * @str: a string
+ * @next: points to the next node
  */
 typedef struct liststr
 {
@@ -51,29 +51,33 @@ typedef struct liststr
 } list_t;
 
 /**
- * struct passinfo - Structure for passing pseudo-arguments to functions
- * @status: Return status of the last executed command
- * @cmd_buf: Address of pointer to cmd_buf, on if chaining
- * @cmd_buf_type: CMD_type ||, &&, ;
- * @readfd: The fd from which to read line input
- * @histcount: History line number count
- * @line_count: Error count
- * @err_num: Error code for exit()s
- * @linecount_flag: If on, count this line of input
- * @fname: Program filename
- * @env: Linked list local copy of environ
- * @environ: Custom modified copy of environ from LL env
- * @history: History node
- * @alias: Alias node
- * @arg: String generated from getline containing arguments
- * @argv: Array of strings generated from arguments
- * @path: String path for the current command
- * @argc: Argument count
- * @env_changed: If environ is changed
+ *struct passinfo - contains pseudo-arguements to pass into a function,
+ *@arg: a string generated from getline containing arguements
+ *@argv: an array of strings generated from arg
+ *@path: a string path for the current command
+ *@argc: the argument count
+ *@line_count: the error count
+ *@err_num: the error code for exit()s
+ *@linecount_flag: if on count this line of input
+ *@fname: the program filename
+ *@env: linked list local copy of environ
+ *@environ: custom modified copy of environ from LL env
+ *@history: the history node
+ *@alias: the alias node
+ *@env_changed: on if environ was changed
+ *@status: the return status of the last exec'd command
+ *@cmd_buf: address of pointer to cmd_buf, on if chaining
+ *@cmd_buf_type: CMD_type ||, &&, ;
+ *@readfd: the fd from which to read line input
+ *@histcount: the history line number count
  */
 typedef struct passinfo
 {
 	char *arg;
+	char **argv;
+	char *path;
+	int argc;
+	unsigned int line_count;
 	int err_num;
 	int linecount_flag;
 	char *fname;
@@ -81,14 +85,10 @@ typedef struct passinfo
 	list_t *history;
 	list_t *alias;
 	char **environ;
-	char **argv;
-	char *path;
-	int argc;
-	unsigned int line_count;
 	int env_changed;
 	int status;
 
-	char **cmd_buf; /* Pointer to command ; chain buffer, for memory management */
+	char **cmd_buf; /* pointer to cmd ; chain buffer, for memory mangement */
 	int cmd_buf_type; /* CMD_type ||, &&, ; */
 	int readfd;
 	int histcount;
@@ -99,9 +99,9 @@ typedef struct passinfo
 	0, 0, 0}
 
 /**
- * struct builtin - Structure for built-in commands
- * @type: Builtin command flag
- * @func: Function pointer
+ *struct builtin - contains a builtin string and related function
+ *@type: the builtin command flag
+ *@func: the function
  */
 typedef struct builtin
 {
@@ -109,27 +109,26 @@ typedef struct builtin
 	int (*func)(info_t *);
 } builtin_table;
 
-/* Function prototypes */
-
-/* loophsh.c */
-int loophsh(char **);
-
-/* toem_parser.c */
-int is_cmd(info_t *, char *);
-char *dup_chars(char *, int, int);
-char *find_path(info_t *, char *, char *);
-
-/* toem_errors.c */
-void _eputs(char *);
-int _eputchar(char);
-int _putfd(char c, int fd);
-int _putsfd(char *str, int fd);
 
 /* toem_shloop.c */
 int hsh(info_t *, char **);
 int find_builtin(info_t *);
 void find_cmd(info_t *);
 void fork_cmd(info_t *);
+
+/* toem_parser.c */
+int is_cmd(info_t *, char *);
+char *dup_chars(char *, int, int);
+char *find_path(info_t *, char *, char *);
+
+/* loophsh.c */
+int loophsh(char **);
+
+/* toem_errors.c */
+void _eputs(char *);
+int _eputchar(char);
+int _putfd(char c, int fd);
+int _putsfd(char *str, int fd);
 
 /* toem_string.c */
 int _strlen(char *);
@@ -142,9 +141,6 @@ char *_strcpy(char *, char *);
 char *_strdup(const char *);
 void _puts(char *);
 int _putchar(char);
-
-/* toem_memory.c */
-int bfree(void **);
 
 /* toem_exits.c */
 char *_strncpy(char *, char *, int);
@@ -160,6 +156,8 @@ char *_memset(char *, char, unsigned int);
 void ffree(char **);
 void *_realloc(void *, unsigned int, unsigned int);
 
+/* toem_memory.c */
+int bfree(void **);
 
 /* toem_atoi.c */
 int interactive(info_t *);
@@ -174,6 +172,11 @@ int print_d(int, int);
 char *convert_number(long int, int, int);
 void remove_comments(char *);
 
+/* toem_builtin.c */
+int _myexit(info_t *);
+int _mycd(info_t *);
+int _myhelp(info_t *);
+
 /* toem_builtin1.c */
 int _myhistory(info_t *);
 int _myalias(info_t *);
@@ -182,11 +185,6 @@ int _myalias(info_t *);
 ssize_t get_input(info_t *);
 int _getline(info_t *, char **, size_t *);
 void sigintHandler(int);
-
-/* toem_builtin.c */
-int _myexit(info_t *);
-int _mycd(info_t *);
-int _myhelp(info_t *);
 
 /* toem_getinfo.c */
 void clear_info(info_t *);
@@ -204,13 +202,6 @@ int populate_env_list(info_t *);
 char **get_environ(info_t *);
 int _unsetenv(info_t *, char *);
 int _setenv(info_t *, char *, char *);
-
-/* toem_vars.c */
-int is_chain(info_t *, char *, size_t *);
-void check_chain(info_t *, char *, size_t *, size_t, size_t);
-int replace_alias(info_t *);
-int replace_vars(info_t *);
-int replace_string(char **, char *);
 
 /* toem_history.c */
 char *get_history_file(info_t *info);
@@ -233,6 +224,12 @@ size_t print_list(const list_t *);
 list_t *node_starts_with(list_t *, char *, char);
 ssize_t get_node_index(list_t *, list_t *);
 
+/* toem_vars.c */
+int is_chain(info_t *, char *, size_t *);
+void check_chain(info_t *, char *, size_t *, size_t, size_t);
+int replace_alias(info_t *);
+int replace_vars(info_t *);
+int replace_string(char **, char *);
 
 #endif
 
