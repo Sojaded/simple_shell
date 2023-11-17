@@ -69,5 +69,16 @@ return (1);
  *
  * Return: The number of characters written.
  */
-int _putsfd
+int _putsfd(char *str, int fd)
+{
+	int i = 0;
+
+	if (!str)
+		return (0);
+	while (*str)
+	{
+		i += _putfd(*str++, fd);
+	}
+	return (i);
+}
 
