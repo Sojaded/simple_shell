@@ -15,7 +15,7 @@
 /* Constants for command chain */
 #define CMD_NORM	0
 #define CMD_OR		1
-#define CMD_AND	2
+#define CMD_AND		2
 #define CMD_CHAIN	3
 
 /* Constants for all convert_number() */

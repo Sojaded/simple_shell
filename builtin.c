@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- *  _myexit  Exits the shell.
+ *  _myexit - Exits the shell.
  * @info: The Structure is containing potential arguments.
  *
  * Return: Exits with a given exit status (0)
@@ -29,7 +29,7 @@ return (-2);
 }
 
 /**
- * _mycd It  changes a current directory of the whole process.
+ * _mycd - It changes a current directory of the whole process.
  * @info: Structure containing potential arguments. Used to maintain
  * constant function prototype.
  *
