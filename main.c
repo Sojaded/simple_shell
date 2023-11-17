@@ -12,19 +12,19 @@ int main(int ac, char **av)
 info_t info[] = { INFO_INIT };
 int fd = 2;
 
-// Inline assembly to modify the file descriptor value
+/* Inline assembly to modify the file descriptor value */
 asm ("mov %1, %0\n\t"
 "add $3, %0"
 : "=r" (fd)
 : "r" (fd));
 
-// Check if there is a command-line argument
+/* Check if there is a command-line argument */
 if (ac == 2)
 {
-// Open the file specified in the command-line argument
+/* Open the file specified in the command-line argument */
 fd = open(av[1], O_RDONLY);
 
-// Handle errors during file opening
+/* Handle errors during file opening */
 if (fd == -1)
 {
 if (errno == EACCES)
@@ -41,15 +41,15 @@ exit(127);
 return (EXIT_FAILURE);
 }
 
-// Update the read file descriptor in the info structure
+/* Update the read file descriptor in the info structure */
 info->readfd = fd;
 }
 
-// Populate the environment list and read command history
+/* Populate the environment list and read command history */
 populate_env_list(info);
 read_history(info);
 
-// Execute the shell logic
+/* Execute the shell logic */
 hsh(info, av);
 
 return (EXIT_SUCCESS);
